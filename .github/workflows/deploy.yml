@@ -6,7 +6,9 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
@@ -21,10 +23,31 @@ jobs:
           python-version: '3.11'
 
       - name: 安装依赖
-        run: |
-          pip install mkdocs-material
+        run: pip install mkdocs-material
 
-      - name: 构建并发布
+      - name: 构建与整合
         run: |
+          # 1. 编译 MkDocs
           cd portal
-          mkdocs gh-deploy --force
+          mkdocs build
+          
+          # 2. 创建一个临时 site 文件夹用来存放最终要上传的所有东西
+          cd ..
+          mkdir -p final_site/portal
+          
+          # 3. 搬运工坊网页到 final_site/portal
+          cp -r portal/site/* final_site/portal/
+          
+          # 4. 搬运根目录的大门和资源到 final_site 根目录
+          cp index.html final_site/
+          cp -r assets final_site/ || true
+          cp -r css final_site/ || true
+          cp -r js final_site/ || true
+
+      - name: 上传所有零件
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./final_site
+
+      - name: 正式发布
+        uses: actions/deploy-pages@v4
