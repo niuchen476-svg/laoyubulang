@@ -47,39 +47,46 @@
     }
 
     h1 {
-      font-size: clamp(1.4rem, 4vw, 2.2rem);
-      font-weight: 700;
-      letter-spacing: .18em;
+      font-size: clamp(2.8rem, 9vw, 4.5rem);
+      font-weight: 800;
+      letter-spacing: .32em;
       color: #fff;
-      text-shadow: 0 0 24px rgba(255, 117, 140, 0.9),
-                   0 2px 8px rgba(0,0,0,0.55);
+      text-shadow: 
+        0 0 30px rgba(255, 117, 140, 1),
+        0 0 60px rgba(255, 150, 170, 0.8),
+        0 0 90px rgba(255, 100, 130, 0.6),
+        0 4px 20px rgba(0, 0, 0, 0.6);
       text-align: center;
-      padding: 0 16px;
+      padding: 0 20px;
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      line-height: 1.2;
     }
 
     /* ── 主按钮 ── */
     #enter-btn {
       position: relative;
-      padding: 16px 48px;
-      font-size: clamp(1rem, 3vw, 1.25rem);
-      font-weight: 700;
-      letter-spacing: .12em;
+      padding: 22px 64px;
+      font-size: clamp(1.2rem, 4vw, 1.6rem);
+      font-weight: 800;
+      letter-spacing: .14em;
       color: #fff;
       cursor: pointer;
-      border: 2.5px solid #ff758c;
+      border: 3.5px solid #ff758c;
       border-radius: 50px;
       outline: none;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(18px) saturate(1.6);
-      -webkit-backdrop-filter: blur(18px) saturate(1.6);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
       box-shadow:
-        0 0 22px rgba(255, 117, 140, 0.55),
-        0 8px 32px rgba(0, 0, 0, 0.28),
-        inset 0 1px 0 rgba(255,255,255,0.25);
-      text-shadow: 0 1px 6px rgba(0,0,0,0.4);
-      transition: transform .28s cubic-bezier(.34,1.56,.64,1),
-                  box-shadow .28s ease,
-                  background .28s ease;
+        0 0 28px rgba(255, 117, 140, 0.7),
+        0 0 50px rgba(255, 150, 170, 0.4),
+        0 12px 45px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255,255,255,0.3);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1),
+                  box-shadow .3s ease,
+                  background .3s ease,
+                  border-color .3s ease;
       user-select: none;
       overflow: hidden;
     }
@@ -90,27 +97,51 @@
       position: absolute; inset: 0;
       border-radius: inherit;
       background: linear-gradient(135deg,
-        rgba(255,117,140,0.22) 0%,
-        rgba(255,200,100,0.10) 100%);
+        rgba(255,117,140,0.35) 0%,
+        rgba(255,200,100,0.15) 100%);
       opacity: 0;
-      transition: opacity .28s;
+      transition: opacity .3s;
+      pointer-events: none;
+    }
+
+    /* 外部光晕效果 */
+    #enter-btn::after {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: inherit;
+      background: radial-gradient(circle, rgba(255, 117, 140, 0.5) 0%, rgba(255, 117, 140, 0) 70%);
+      opacity: 0;
+      transition: opacity .3s;
+      pointer-events: none;
     }
 
     #enter-btn:hover {
-      transform: scale(1.08);
-      background: rgba(255, 255, 255, 0.20);
+      transform: scale(1.12);
+      background: rgba(255, 255, 255, 0.25);
+      border-color: #ff99b1;
       box-shadow:
-        0 0 36px rgba(255, 117, 140, 0.80),
-        0 12px 40px rgba(0,0,0,0.32),
-        inset 0 1px 0 rgba(255,255,255,0.35);
+        0 0 40px rgba(255, 117, 140, 1),
+        0 0 70px rgba(255, 150, 170, 0.6),
+        0 0 100px rgba(255, 100, 130, 0.4),
+        0 15px 55px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255,255,255,0.4);
     }
     #enter-btn:hover::before { opacity: 1; }
+    #enter-btn:hover::after { opacity: 1; }
 
     #enter-btn:active { transform: scale(0.97); }
 
     /* 手机端微调 */
     @media (max-width: 480px) {
-      #enter-btn { padding: 14px 36px; }
+      #enter-btn { 
+        padding: 18px 44px;
+        font-size: 1.1rem;
+      }
+      h1 {
+        font-size: 2.2rem;
+        letter-spacing: .24em;
+      }
     }
   </style>
 </head>
