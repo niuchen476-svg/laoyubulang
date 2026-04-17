@@ -6,7 +6,7 @@ site_url: https://你的GitHub用户名.github.io/laoyubulang
 theme:
   name: material
   language: zh
-  custom_dir: docs/overrides
+  #custom_dir: docs/overrides
   palette:
     - scheme: slate
       primary: deep purple
