@@ -25,4 +25,6 @@ jobs:
           pip install mkdocs-material
 
       - name: 构建并发布
-        run: mkdocs gh-deploy --force
+        run: |
+          cd portal
+          mkdocs gh-deploy --force
