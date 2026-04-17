@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>老鱼不吹浪的数字工坊</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    /* ── 背景 ── */
+    #bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: url('assets/images/bg.jpg') center center / cover no-repeat;
+    }
+    #bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg,
+        rgba(80, 30, 80, 0.35) 0%,
+        rgba(40, 10, 60, 0.20) 50%,
+        rgba(180, 80, 120, 0.15) 100%);
+    }
+
+    /* ── 粒子 canvas ── */
+    #particles-canvas,
+    #meteors-canvas,
+    #mouse-trail-canvas {
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none;
+    }
+    #meteors-canvas { z-index: 2; }
+    #mouse-trail-canvas { z-index: 3; }
+
+    /* ── 中央内容 ── */
+    #center {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 28px;
+    }
+
+    h1 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: .18em;
+      color: #fff;
+      text-shadow: 0 0 24px rgba(255, 117, 140, 0.9),
+                   0 2px 8px rgba(0,0,0,0.55);
+      text-align: center;
+      padding: 0 16px;
+    }
+
+    /* ── 主按钮 ── */
+    #enter-btn {
+      position: relative;
+      padding: 16px 48px;
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: 700;
+      letter-spacing: .12em;
+      color: #fff;
+      cursor: pointer;
+      border: 2.5px solid #ff758c;
+      border-radius: 50px;
+      outline: none;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(18px) saturate(1.6);
+      -webkit-backdrop-filter: blur(18px) saturate(1.6);
+      box-shadow:
+        0 0 22px rgba(255, 117, 140, 0.55),
+        0 8px 32px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+      transition: transform .28s cubic-bezier(.34,1.56,.64,1),
+                  box-shadow .28s ease,
+                  background .28s ease;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* 内光晕 */
+    #enter-btn::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg,
+        rgba(255,117,140,0.22) 0%,
+        rgba(255,200,100,0.10) 100%);
+      opacity: 0;
+      transition: opacity .28s;
+    }
+
+    #enter-btn:hover {
+      transform: scale(1.08);
+      background: rgba(255, 255, 255, 0.20);
+      box-shadow:
+        0 0 36px rgba(255, 117, 140, 0.80),
+        0 12px 40px rgba(0,0,0,0.32),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+    #enter-btn:hover::before { opacity: 1; }
+
+    #enter-btn:active { transform: scale(0.97); }
+
+    /* 手机端微调 */
+    @media (max-width: 480px) {
+      #enter-btn { padding: 14px 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="bg"></div>
+  <canvas id="particles-canvas"></canvas>
+  <canvas id="meteors-canvas"></canvas>
+  <canvas id="mouse-trail-canvas"></canvas>
+
+  <div id="center">
+    <h1>老鱼不吹浪的数字工坊</h1>
+    <button id="enter-btn" onclick="window.location.href='./portal/'">进入数字工坊</button>
+  </div>
+
+<script>
+/* ═══════════════════════════════════════════
+   1. 浮动粒子
+═══════════════════════════════════════════ */
+(function () {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  const COLORS = [
+    'rgba(255,255,255,PAL)',
+    'rgba(255,180,210,PAL)',
+    'rgba(220,160,255,PAL)',
+    'rgba(255,220,120,PAL)',
+  ];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function mkParticle() {
+    const col = COLORS[Math.floor(Math.random() * COLORS.length)];
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.8 + 0.4,
+      alpha: Math.random() * 0.55 + 0.15,
+      vx: (Math.random() - 0.5) * 0.22,
+      vy: -(Math.random() * 0.25 + 0.08),
+      twinkleSpeed: Math.random() * 0.018 + 0.006,
+      twinkleDir: 1,
+      color: col,
+    };
+  }
+
+  function init() {
+    resize();
+    const count = Math.floor((W * H) / 6000);
+    particles = Array.from({ length: count }, mkParticle);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of particles) {
+      p.x += p.vx; p.y += p.vy;
+      p.alpha += p.twinkleSpeed * p.twinkleDir;
+      if (p.alpha >= 0.72 || p.alpha <= 0.08) p.twinkleDir *= -1;
+      if (p.y < -4) { p.y = H + 4; p.x = Math.random() * W; }
+      if (p.x < -4 || p.x > W + 4) { p.x = Math.random() * W; }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color.replace('PAL', p.alpha.toFixed(2));
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  init(); draw();
+})();
+
+
+/* ═══════════════════════════════════════════
+   2. 流星效果
+═══════════════════════════════════════════ */
+(function () {
+  const canvas = document.getElementById('meteors-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, meteors = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function mkMeteor() {
+    const angle = (Math.random() * 25 + 20) * Math.PI / 180; // 20°-45° 斜角
+    const speed = Math.random() * 7 + 5;
+    const len   = Math.random() * 180 + 80;
+    const startX = Math.random() * W * 1.2;
+    const startY = Math.random() * H * 0.5;
+    return {
+      x: startX, y: startY,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      len, alpha: 1,
+      trail: [],
+      life: 1,
+      decay: Math.random() * 0.012 + 0.008,
+    };
+  }
+
+  function spawnMeteor() {
+    meteors.push(mkMeteor());
+    // 随机 2-7 秒再生一颗
+    setTimeout(spawnMeteor, Math.random() * 5000 + 2000);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i];
+      m.trail.push({ x: m.x, y: m.y });
+      if (m.trail.length > Math.ceil(m.len / 6)) m.trail.shift();
+
+      m.x += m.vx; m.y += m.vy;
+      m.life -= m.decay;
+      if (m.life <= 0 || m.x > W + 200 || m.y > H + 200) {
+        meteors.splice(i, 1); continue;
+      }
+
+      // 绘制渐变拖尾
+      if (m.trail.length > 1) {
+        const grad = ctx.createLinearGradient(
+          m.trail[0].x, m.trail[0].y, m.x, m.y
+        );
+        grad.addColorStop(0, `rgba(255,255,255,0)`);
+        grad.addColorStop(0.6, `rgba(255,210,230,${(m.life * 0.5).toFixed(2)})`);
+        grad.addColorStop(1, `rgba(255,255,255,${(m.life * 0.9).toFixed(2)})`);
+        ctx.beginPath();
+        ctx.moveTo(m.trail[0].x, m.trail[0].y);
+        for (const pt of m.trail) ctx.lineTo(pt.x, pt.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1.8;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+
+      // 头部高亮
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${(m.life * 0.95).toFixed(2)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  setTimeout(spawnMeteor, 800);
+  draw();
+})();
+
+
+/* ═══════════════════════════════════════════
+   3. 鼠标划过粒子追踪
+═══════════════════════════════════════════ */
+(function () {
+  const canvas = document.getElementById('mouse-trail-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  let mouseX = 0, mouseY = 0;
+  let lastEmitTime = 0;
+  const EMIT_INTERVAL = 8; // 毫秒间隔，控制粒子密度
+  const mouseTrailParticles = [];
+
+  // 粒子颜色配置：淡紫、淡粉、金黄混合
+  const TRAIL_COLORS = [
+    { r: 200, g: 150, b: 220 }, // 淡紫
+    { r: 255, g: 180, b: 210 }, // 淡粉
+    { r: 255, g: 220, b: 100 }, // 金黄
+    { r: 230, g: 200, b: 240 }, // 浅紫
+    { r: 255, g: 200, b: 180 }, // 浅橙
+  ];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function createMouseTrailParticle(x, y) {
+    const color = TRAIL_COLORS[Math.floor(Math.random() * TRAIL_COLORS.length)];
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 0.5 + 0.3;
+
+    return {
+      x: x + (Math.random() - 0.5) * 4,
+      y: y + (Math.random() - 0.5) * 4,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      r: Math.random() * 2.2 + 1.2,
+      life: 1, // 0-1，表示粒子的生命周期
+      maxLife: Math.random() * 0.8 + 0.6, // 随机生命周期长度（相对值）
+      color: color,
+      glow: Math.random() * 1.5 + 0.8, // 光晕强度
+    };
+  }
+
+  function drawParticleWithGlow(p) {
+    const alpha = Math.max(0, p.life / p.maxLife);
+
+    // 绘制光晕（Glow）
+    const glowSize = p.r * p.glow * 2 * alpha;
+    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+    gradient.addColorStop(0, `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${(alpha * 0.4).toFixed(2)})`);
+    gradient.addColorStop(0.5, `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${(alpha * 0.15).toFixed(2)})`);
+    gradient.addColorStop(1, `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, 0)`);
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 绘制粒子本体（星星或圆点）
+    const particleRadius = p.r * alpha;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, particleRadius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${p.color.r}, ${p.color.g}, ${p.color.b}, ${(alpha * 0.8).toFixed(2)})`;
+    ctx.fill();
+
+    // 亮点（中心高亮）
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, particleRadius * 0.4, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255, 255, 255, ${(alpha * 0.5).toFixed(2)})`;
+    ctx.fill();
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = mouseTrailParticles.length - 1; i >= 0; i--) {
+      const p = mouseTrailParticles[i];
+      
+      // 更新物理位置
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05; // 轻微重力
+      p.life -= 0.08; // 生命衰减速度
+
+      if (p.life <= 0) {
+        mouseTrailParticles.splice(i, 1);
+      } else {
+        drawParticleWithGlow(p);
+      }
+    }
+
+    requestAnimationFrame(update);
+  }
+
+  document.addEventListener('mousemove', function (e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    // 控制粒子产生频率，避免过度渲染
+    const now = Date.now();
+    if (now - lastEmitTime >= EMIT_INTERVAL) {
+      for (let i = 0; i < 1; i++) {
+        mouseTrailParticles.push(createMouseTrailParticle(mouseX, mouseY));
+      }
+      lastEmitTime = now;
+    }
+  });
+
+  window.addEventListener('resize', resize);
+  resize();
+  update();
+})();
+
+
+/* ═══════════════════════════════════════════
+   4. 点击空白处烟花 (canvas-confetti)
+═══════════════════════════════════════════ */
+const DOPAMINE_COLORS = [
+  '#ff758c', '#ff4d6d', '#ff9a3c',
+  '#ffca3a', '#c77dff', '#7b2fff',
+  '#ff6b9d', '#ffd6e0', '#06d6a0',
+];
+
+document.addEventListener('click', function (e) {
+  // 如果点的是按钮就不触发烟花
+  if (e.target.id === 'enter-btn') return;
+
+  const x = e.clientX / window.innerWidth;
+  const y = e.clientY / window.innerHeight;
+
+  // 第一波：扇形爆裂
+  confetti({
+    particleCount: 80,
+    spread: 90,
+    startVelocity: 28,
+    origin: { x, y },
+    colors: DOPAMINE_COLORS,
+    ticks: 160,
+    gravity: 0.9,
+    scalar: 0.9,
+    shapes: ['circle', 'square'],
+  });
+
+  // 第二波：延迟星形
+  setTimeout(() => {
+    confetti({
+      particleCount: 40,
+      spread: 55,
+      startVelocity: 18,
+      origin: { x, y },
+      colors: DOPAMINE_COLORS,
+      ticks: 120,
+      gravity: 0.75,
+      scalar: 1.1,
+      shapes: ['star'],
+    });
+  }, 120);
+});
+</script>
+
+</body>
+</html>
