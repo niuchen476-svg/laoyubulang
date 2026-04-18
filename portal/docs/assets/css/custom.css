@@ -317,3 +317,69 @@ blockquote p {
   font-size: 1.3rem;
   line-height: 1;
 }
+
+/* ============================
+   移动端响应式修复
+   ============================ */
+
+/* 防止整体横向溢出 */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  /* 内容容器：撑满宽度，减小内边距 */
+  .md-content__inner {
+    padding: 1rem 0.85rem !important;
+    margin: 0.5rem 0 !important;
+    border-radius: 10px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden;
+  }
+
+  /* 卡片网格：强制单列，避免字符逐行拆行 */
+  .home-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+
+  /* 卡片本身：满宽、正常水平书写 */
+  .home-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    writing-mode: horizontal-tb !important;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* 卡片内文字：明确横向排列 */
+  .home-card h2,
+  .home-card h3,
+  .home-card p,
+  .home-card a {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    white-space: normal !important;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* 底部导航遮挡修复：确保内容不被遮住 */
+  .md-main__inner {
+    padding-bottom: 68px !important;
+  }
+
+  /* MkDocs 内容主区：防止超出屏幕 */
+  .md-content {
+    max-width: 100% !important;
+    overflow-x: hidden;
+  }
+
+  /* 代码块横向可滚动，不撑破布局 */
+  .md-typeset pre {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+}
