@@ -1,4 +1,4 @@
-# 欢迎来到数字花间 🌸
+# 欢迎来到数字工坊 🌸
 
 > **老鱼不吹浪** · 课程笔记 · AI开发 · 技术日志
 
@@ -37,19 +37,3 @@ Claude、LLM 应用开发实践，Prompt 工程与 API 接入笔记。
 </div>
 
 </div>
-
----
-
-## 嵌入 PDF 的方法
-
-在任意笔记中，使用以下 HTML 片段即可内嵌 PDF 预览与下载：
-
-```html
-<div class="pdf-container">
-  <iframe src="./your-file.pdf" class="pdf-viewer"></iframe>
-  <a href="./your-file.pdf" download class="pdf-download-btn">⬇ 下载 PDF</a>
-</div>
-```
-
-!!! tip "路径说明"
-    PDF 文件放在与 `.md` 同级目录，使用相对路径 `./your-file.pdf` 即可。
