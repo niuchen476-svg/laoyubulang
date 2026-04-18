@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────
-   sakura.js — 数字花间 · 粒子与动效
+   sakura.js — 数字工坊 · 粒子与动效
    ────────────────────────────────────────────── */
 
 // 《你的名字》色盘
@@ -161,27 +161,41 @@ document.addEventListener('click', e => {
 });
 
 // ── 手机端底部导航注入 ─────────────────────────
+
+// 计算 portal 根路径，避免子页面相对路径 404
+function getPortalRoot() {
+  const baseEl = document.querySelector('base');
+  const src = baseEl ? baseEl.href : window.location.href;
+  try {
+    const url = new URL(src);
+    const m = url.pathname.match(/^(.*\/portal\/)/);
+    if (m) return url.origin + m[1];
+  } catch (_) {}
+  const m2 = window.location.pathname.match(/^(.*\/portal\/)/);
+  return m2 ? window.location.origin + m2[1] : window.location.origin + '/';
+}
+
 function injectMobileNav() {
   if (document.querySelector('.mobile-bottom-nav')) return;
   const nav = document.createElement('nav');
   nav.className = 'mobile-bottom-nav';
 
-  const base = document.querySelector('base')
-    ? document.querySelector('base').href
-    : window.location.origin + '/';
+  const root = getPortalRoot();
 
   const items = [
-    { icon: '🏠', label: '首页',   href: './index.html' },
-    { icon: '📚', label: '课程',   href: './课程笔记/' },
-    { icon: '🤖', label: 'AI开发', href: './AI开发/'   },
-    { icon: '📋', label: '日志',   href: './changelog.html' }
+    { icon: '🏠', label: '首页',   path: '' },
+    { icon: '📚', label: '课程',   path: encodeURIComponent('课程笔记') + '/' },
+    { icon: '🤖', label: 'AI开发', path: encodeURIComponent('AI开发') + '/' },
+    { icon: '📋', label: '日志',   path: 'changelog/' }
   ];
 
   items.forEach(item => {
     const a = document.createElement('a');
-    a.href = item.href;
+    a.href = root + item.path;
     a.innerHTML = `<span class="nav-icon">${item.icon}</span><span>${item.label}</span>`;
-    if (window.location.href.includes(item.href.replace('./', '').replace('.html', ''))) {
+    const currentPath = window.location.pathname;
+    if (item.path === '' ? (currentPath.endsWith('/portal/') || currentPath.endsWith('/portal/index.html'))
+                         : currentPath.includes(decodeURIComponent(item.path.replace(/\/$/, '')))) {
       a.classList.add('active');
     }
     nav.appendChild(a);
