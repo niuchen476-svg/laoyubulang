@@ -1,16 +1,24 @@
 site_name: 老鱼不吹浪的数字花间
-site_description: 课程笔记 · 产品想法 · 生活随笔
+site_description: 课程笔记 · AI开发 · 技术日志
 site_author: 老鱼不吹浪
-site_url: https://你的GitHub用户名.github.io/laoyubulang
+site_url: https://laoyubulang.github.io/laoyubulang
 
 theme:
   name: material
   language: zh
-  #custom_dir: docs/overrides
   palette:
+    - scheme: default
+      primary: deep purple
+      accent: pink
+      toggle:
+        icon: material/weather-night
+        name: 切换至暗色模式
     - scheme: slate
       primary: deep purple
-      accent: orange
+      accent: pink
+      toggle:
+        icon: material/weather-sunny
+        name: 切换至亮色模式
   font:
     text: Noto Serif SC
     code: JetBrains Mono
@@ -18,6 +26,7 @@ theme:
     - navigation.tabs
     - navigation.sections
     - navigation.top
+    - navigation.footer
     - search.highlight
     - search.suggest
     - content.code.copy
@@ -32,15 +41,15 @@ extra_javascript:
 nav:
   - 首页: index.md
   - 课程笔记:
-    - 课程笔记/index.md
-  - 产品想法:
-    - 产品想法/index.md
-  - 生活随笔:
-    - 生活随笔/index.md
+      - 概览: 课程笔记/index.md
+  - AI开发:
+      - 概览: AI开发/index.md
+  - 技术日志: changelog.md
 
 plugins:
   - search:
       lang: zh
+      separator: '[\s\u200b\-]+'
 
 markdown_extensions:
   - admonition

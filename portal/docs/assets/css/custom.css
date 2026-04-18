@@ -1,0 +1,319 @@
+/* ============================
+   背景：《你的名字》剧照 + 深紫渐变
+   ============================ */
+
+body,
+.md-main,
+.md-container {
+  background: transparent !important;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: url('../images/bg.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* 深紫→黑渐变遮罩，与大门引导页丝滑过渡 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    160deg,
+    rgba(28, 8, 55, 0.68) 0%,
+    rgba(12, 4, 28, 0.72) 45%,
+    rgba(4, 2, 10, 0.80) 100%
+  );
+}
+
+/* ============================
+   顶部导航栏
+   ============================ */
+.md-header {
+  background: rgba(15, 8, 40, 0.75) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(180, 120, 255, 0.18);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
+
+.md-tabs {
+  background: rgba(10, 5, 28, 0.6) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* ============================
+   侧边栏
+   ============================ */
+.md-sidebar {
+  background: transparent !important;
+}
+
+.md-sidebar__scrollwrap {
+  background: rgba(10, 5, 28, 0.55);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(180, 120, 255, 0.1);
+}
+
+/* ============================
+   主内容区
+   ============================ */
+.md-content__inner {
+  background: rgba(12, 6, 30, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  border: 1px solid rgba(200, 150, 255, 0.15);
+  padding: 2rem 2.5rem !important;
+  margin: 1.5rem 0;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+/* ============================
+   首页卡片网格
+   ============================ */
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.4rem;
+  margin: 2rem 0;
+}
+
+.home-card {
+  background: rgba(30, 15, 60, 0.65);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(200, 150, 255, 0.2);
+  border-radius: 14px;
+  padding: 1.4rem 1.6rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.home-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 36px rgba(180, 100, 255, 0.25);
+  border-color: rgba(200, 150, 255, 0.45);
+}
+
+.home-card h2,
+.home-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  color: #f0d8ff !important;
+}
+
+.home-card p {
+  font-size: 0.9rem;
+  color: rgba(220, 200, 255, 0.75);
+  line-height: 1.7;
+}
+
+.home-card a {
+  color: #f4a26a !important;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.home-card a:hover { color: #ffd6a0 !important; }
+
+/* ============================
+   标题与文本颜色
+   ============================ */
+.md-content h1,
+.md-content h2,
+.md-content h3 {
+  color: #f0d0ff !important;
+}
+
+.md-content p,
+.md-content li {
+  color: rgba(230, 210, 255, 0.88);
+}
+
+blockquote {
+  border-left: 3px solid rgba(200, 150, 255, 0.5) !important;
+  background: rgba(100, 50, 180, 0.15) !important;
+  border-radius: 0 8px 8px 0;
+}
+
+blockquote p {
+  color: rgba(220, 190, 255, 0.85) !important;
+}
+
+/* ============================
+   链接
+   ============================ */
+.md-content a {
+  color: #f4a26a !important;
+}
+.md-content a:hover {
+  color: #ffd6a0 !important;
+  text-decoration: underline;
+}
+
+/* ============================
+   代码块
+   ============================ */
+.md-typeset code {
+  background: rgba(80, 40, 140, 0.35) !important;
+  color: #f9c880 !important;
+  border-radius: 4px;
+}
+
+.md-typeset pre {
+  background: rgba(10, 5, 28, 0.8) !important;
+  border: 1px solid rgba(180, 120, 255, 0.2);
+  border-radius: 10px;
+}
+
+/* ============================
+   页脚导航（navigation.footer）
+   ============================ */
+.md-footer {
+  background: rgba(8, 4, 20, 0.75) !important;
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(180, 120, 255, 0.15);
+}
+
+.md-footer-nav__link {
+  color: rgba(220, 190, 255, 0.8) !important;
+}
+
+.md-footer-nav__link:hover {
+  color: #f4a26a !important;
+}
+
+/* ============================
+   搜索框
+   ============================ */
+.md-search__form {
+  background: rgba(30, 15, 60, 0.75) !important;
+  border-radius: 8px;
+}
+
+/* ============================
+   粒子画布（JS 控制）
+   ============================ */
+#particle-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.md-header,
+.md-tabs,
+.md-container,
+.md-sidebar,
+.md-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================
+   PDF 内嵌预览
+   ============================ */
+.pdf-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.pdf-viewer {
+  width: 100%;
+  height: 600px;
+  border: 1px solid rgba(200, 150, 255, 0.25);
+  border-radius: 12px;
+  background: rgba(10, 5, 28, 0.8);
+}
+
+.pdf-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  align-self: flex-start;
+  padding: 0.5rem 1.2rem;
+  background: rgba(100, 40, 180, 0.55);
+  border: 1px solid rgba(200, 150, 255, 0.35);
+  border-radius: 8px;
+  color: #f0d8ff !important;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.pdf-download-btn:hover {
+  background: rgba(140, 60, 220, 0.7) !important;
+  transform: translateY(-2px);
+  color: #fff !important;
+}
+
+/* ============================
+   手机端底部导航栏
+   ============================ */
+@media screen and (max-width: 76.1875em) {
+  /* 给底部留出导航栏空间 */
+  .md-main {
+    padding-bottom: 56px !important;
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+  }
+}
+
+@media screen and (min-width: 76.25em) {
+  .mobile-bottom-nav {
+    display: none;
+  }
+}
+
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 56px;
+  background: rgba(10, 5, 28, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(180, 120, 255, 0.2);
+  align-items: stretch;
+  justify-content: space-around;
+}
+
+.mobile-bottom-nav a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: rgba(200, 170, 255, 0.65) !important;
+  font-size: 0.65rem;
+  text-decoration: none !important;
+  transition: color 0.2s;
+}
+
+.mobile-bottom-nav a:hover,
+.mobile-bottom-nav a.active {
+  color: #e0b4ff !important;
+}
+
+.mobile-bottom-nav .nav-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
